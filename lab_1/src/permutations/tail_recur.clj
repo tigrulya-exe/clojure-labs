@@ -1,4 +1,5 @@
-(ns permutations.tail_recur)
+(ns permutations.tail_recur
+  (:gen-class))
 
 (defn enrich-word
   ([word alphabet] (enrich-word word alphabet ()))
@@ -34,6 +35,5 @@
             (enrich-words result alphabet))
      result)))
 
-(defn -main
-  []
+(defn -main []
   (permutations 2 '("a" (:b [:c "d"]))))
