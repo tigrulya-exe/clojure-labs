@@ -1,29 +1,25 @@
+;1.1
 (ns permutations.naive)
 
-(defn enrich-collection
-  [collection alphabet]
+(defn enrich-word [word alphabet]
   (when (not-empty alphabet)
-    (let [recur-enrich-collection (enrich-collection collection
-                                                     (rest alphabet))]
-      (if (not= (first alphabet) (last collection))
-        (conj recur-enrich-collection
-              (concat collection (list (first alphabet))))
-        recur-enrich-collection))))
+    (let [recur-result (enrich-word word
+                                    (rest alphabet))]
+      (if (not= (first alphabet) (last word))
+        (conj recur-result
+              (concat word (list (first alphabet))))
+        recur-result))))
 
-(defn enrich-collections
-  [collections alphabet]
-  (when (not-empty collections)
-    (concat (enrich-collections (rest collections) alphabet)
-            (enrich-collection (first collections) alphabet))))
+(defn enrich-words [words alphabet]
+  (when (not-empty words)
+    (concat (enrich-words (rest words) alphabet)
+            (enrich-word (first words) alphabet))))
 
-(defn permutations
-  [n alphabet]
-  (if (not= 1 n)
-    (enrich-collections (permutations (dec n)
-                                      alphabet)
-                        alphabet)
-    (map #(list %) alphabet)))
+(defn permutations [n alphabet]
+  (if (> n 0)
+    (enrich-words (permutations (dec n) alphabet)
+                  alphabet)
+    '(())))
 
-(defn -main
-  [& x]
+(defn -main []
   (permutations 2 '("a" (:b [:c "d"]))))
