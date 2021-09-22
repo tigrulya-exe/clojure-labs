@@ -7,8 +7,8 @@
          result ()]
     (if (not-empty alphabet)
       (let [current-element (first alphabet)
-            current-res (if (not= current-element (last word))
-                          (cons (concat word (list current-element))
+            current-res (if (not= current-element (first word))
+                          (cons (conj word current-element)
                                 result)
                           result)]
         (recur (rest alphabet) current-res))

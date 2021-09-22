@@ -5,9 +5,9 @@
   (when (not-empty alphabet)
     (let [recur-result (enrich-word word
                                     (rest alphabet))]
-      (if (not= (first alphabet) (last word))
+      (if (not= (first alphabet) (first word))
         (conj recur-result
-              (concat word (list (first alphabet))))
+              (conj word (first alphabet)))
         recur-result))))
 
 (defn enrich-words [words alphabet]
