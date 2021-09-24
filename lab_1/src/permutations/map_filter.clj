@@ -11,9 +11,9 @@
           (map #(enrich-word %1 alphabet) words)))
 
 (defn permutations [n alphabet]
-  (reduce (fn [acc _] (enrich-words acc alphabet))
-          '(())
-          (range 1 (inc n))))
+  (nth (iterate #(enrich-words %1 alphabet)
+                '(()))
+       n))
 
 (defn -main []
   (permutations 2 '("a" (:b [:c "d"]))))
