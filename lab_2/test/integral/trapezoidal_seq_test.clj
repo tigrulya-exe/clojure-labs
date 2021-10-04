@@ -1,6 +1,6 @@
-(ns integral.trapezoidal-memo-test
+(ns integral.trapezoidal-seq-test
   (:require [clojure.test :refer :all]
-            [integral.trapezoidal_memo :refer :all]))
+            [integral.trapezoidal_seq :refer :all]))
 
 (defn test-fn [x]
   (do
@@ -12,14 +12,7 @@
 
 (deftest integral-memo-test
   (testing
-    (let [integral-fn (integral-memo test-fn)]
+    (let [integral-fn (integral test-fn 0.001)]
       (doall (for [delta (range 20)]
                (time (integral-fn (+ 10 delta))))))))
-
-(deftest integral-simple-test
-  (testing
-    (let [integral-fn (integral-simple test-fn)]
-      (doall (for [delta (range 20)]
-               (time (integral-fn (+ 10 delta))))))))
-
 

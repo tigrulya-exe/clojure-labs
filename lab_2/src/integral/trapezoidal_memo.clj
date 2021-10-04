@@ -1,34 +1,27 @@
+; 2.1
 (ns integral.trapezoidal_memo)
 
-(defn area [f x_i x_i+1]
-  (* (double (/ (+ (f x_i) (f x_i+1))
-                2))
-     (- x_i+1 x_i)))
+(defn area [f x_i step]
+  (* (/ (+ (f x_i)
+           (f (+ x_i step)))
+        2)
+     step))
 
 (def area-memo (memoize area))
 
-(defn integral [f area-f steps]
+(defn integral [f area-fn step]
   (fn [x]
-    (let [step (double (/ x steps))]
+    (let [steps (inc (/ x step))]
       (reduce #(+ %1
-                  (area-f f
+                  (area-fn f
                           (* step %2)
-                          (* step (inc %2))))
-              (range steps)))))
-
-(defn integral-with-step [f area-f step]
-  (fn [x]
-    (let [steps (double (/ x step))]
-      (reduce #(+ %1
-                  (area-f f
-                          (* step %2)
-                          (* step (inc %2))))
+                          step))
               (range steps)))))
 
 (defn integral-memo [f]
-  (integral-with-step f area-memo 0.01))
+  (integral f area-memo 0.001))
 
 (defn integral-simple [f]
-  (integral-with-step f area 0.01))
+  (integral f area 0.001))
 
 
