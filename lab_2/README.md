@@ -1,22 +1,15 @@
-# integral
+# Лабораторная 2
 
-A Clojure library designed to ... well, that part is up to you.
+Реализовать функцию (оператор), принимающую аргументом функцию от одной переменной f и
+возвращающую функцию одной переменной, вычисляющую (численно) определенный интеграл `f(t)dt` от `0` до `x`.
 
-## Usage
+Использовать метод трапеций с постоянным шагом.</br>
+При оптимизации исходить из того, что полученная первообразная будет использоваться для
+построения графика (т.е. вызываться многократно в разных точках).
+### 2.1
 
-FIXME
+Оптимизировать функцию с помощью мемоизации
 
-## License
+### 2.2
 
-Copyright © 2021 FIXME
-
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License 2.0 which is available at
-http://www.eclipse.org/legal/epl-2.0.
-
-This Source Code may also be made available under the following Secondary
-Licenses when the conditions for such availability set forth in the Eclipse
-Public License, v. 2.0 are satisfied: GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or (at your
-option) any later version, with the GNU Classpath Exception which is available
-at https://www.gnu.org/software/classpath/license.html.
+Оптимизировать функцию с помощью бесконечной последовательности частичных решений

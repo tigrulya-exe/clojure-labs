@@ -1,11 +1,6 @@
 ; 2.2
-(ns integral.trapezoidal_seq)
-
-(defn area [f x_i step]
-  (* (/ (+ (f x_i)
-           (f (+ x_i step)))
-        2)
-     step))
+(ns integral.trapezium-rule-seq
+  (:require [integral.trapezium-rule :refer [area]]))
 
 (defn generate-area-seq [f step]
   (map first
@@ -17,7 +12,7 @@
   (let [seq (generate-area-seq f step)]
     (fn [x] (nth seq (/ x step)))))
 
-(defn integral-seq [f]
-  (integral f 0.00001))
+(defn integral-seq [f step]
+  (integral f step))
 
 
