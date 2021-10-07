@@ -29,9 +29,9 @@
   (let [primitives {:simple (integral-simple test-fn step)
                     :memo   (integral-memo test-fn step)
                     :seq    (integral-seq test-fn step)}]
-    (doall (for [delta (range 20)]
-             (map (fn [[k v]]
-                    (print-result k
-                                  (my-time (v (+ 10 delta)))
+    (doall (for [delta (range 10)]
+             (map (fn [[name primitive]]
+                    (print-result name
+                                  (my-time (primitive (+ 5 delta)))
                                   delta))
                   primitives)))))

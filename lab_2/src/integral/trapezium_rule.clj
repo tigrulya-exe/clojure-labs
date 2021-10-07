@@ -2,17 +2,18 @@
 
 (defn area [f x_i step]
   (* (/ (+ (f x_i)
-                   (f (+ x_i step)))
-                2)
-             step))
+           (f (+ x_i step)))
+        2)
+     step))
 
 (defn integral [f area-fn step]
-  #(let [steps (inc (/ % step))]
+  #(let [steps (/ % step)]
      (reduce (fn [acc i]
                (+ acc
                   (area-fn f
                            (* step i)
                            step)))
+             0
              (range steps))))
 
 (defn integral-simple [f step]
