@@ -8,11 +8,30 @@
                   [(+ areas (area f x_i step)) (+ x_i step)])
                 [0 0])))
 
-(defn integral [f step]
-  (let [seq (generate-area-seq f step)]
-    (fn [x] (nth seq (/ x step)))))
+(defn generate-area-seq-reductions [f step]
+  (reductions
+    (fn [areas i]
+      (+ areas (area f (* i step) step)))
+    0
+    (range)))
 
-(defn integral-seq [f step]
-  (integral f step))
+(defn generate-area-lazy-seq
+  ([f step]
+   (generate-area-lazy-seq f step 0 0.0))
+  ([f step i areas]
+   (lazy-seq
+     (cons areas
+           (generate-area-lazy-seq f
+                                   step
+                                   (inc i)
+                                   (+ (area f (* i step) step)
+                                      areas))))))
+
+(defn integral-seq
+  ([f step]
+   (integral-seq generate-area-seq f step))
+  ([area-fn f step]
+   (let [seq (area-fn f step)]
+     (fn [x] (nth seq (/ x step))))))
 
 
