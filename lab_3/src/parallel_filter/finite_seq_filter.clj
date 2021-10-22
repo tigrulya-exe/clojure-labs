@@ -2,29 +2,24 @@
 
 (def cpu-count (.availableProcessors (Runtime/getRuntime)))
 
-(defn partition-step [chunk-size coll]
-  [(drop chunk-size coll)
-   (take chunk-size coll)])
+(defn partition-step [coll chunk-sizes]
+  (let [chunk-size (first chunk-sizes)]
+    (lazy-seq (cons (take chunk-size coll)
+                    ; split?
+                    (partition-step (drop chunk-size coll)
+                                    (rest chunk-sizes))))))
 
 (defn my-partition [chunk-count coll]
   (let [coll-size (count coll)
         chunk-size (quot coll-size chunk-count)
         remainder (rem coll-size chunk-count)]
     (->> (iterate inc 0)
-         (map #(if (< % remainder)
-                 (inc chunk-size)
-                 chunk-size))
-         (reductions (fn [[iter _] ch-sz]
-                       (partition-step ch-sz iter))
-                     [coll, '()])
-         (drop 1)
-         (take chunk-count)
-         (map second))))
+         (map #(if (< % remainder) (inc chunk-size) chunk-size))
+         (partition-step coll)
+         (take chunk-count))))
 
 (defn finite-filter [pred coll]
   (->> (my-partition cpu-count coll)
-       (map #(future (filter pred %)))
+       (map #(future (doall (filter pred %))))
        (doall)
-       (map deref)
-       (flatten)))
-
+       (mapcat deref)))
