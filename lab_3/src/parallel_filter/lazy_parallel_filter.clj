@@ -4,10 +4,10 @@
 (def default-chunk-size 64)
 
 (defn split-seq [chunk-size coll]
-  (let [split-coll (split-at chunk-size coll)]
-   (lazy-seq (cons (first split-coll)
-                  (split-seq chunk-size
-                             (second split-coll))))))
+  (let [[chunk rest-coll] (split-at chunk-size coll)]
+    (when (not (empty? coll))
+      (lazy-seq (cons chunk
+                      (split-seq chunk-size rest-coll))))))
 
 (defn lazy-pfilter
   ([pred coll]
@@ -15,5 +15,4 @@
   ([pred coll chunk-size]
    (->> (split-seq (* chunk-size thread-count)
                    coll)
-        (take-while not-empty)
         (mapcat (partial pfilter pred)))))

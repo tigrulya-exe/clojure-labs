@@ -4,13 +4,13 @@
             [parallel-filter.test-shared :refer :all]))
 
 (defn test-predicate [elem]
-  (Thread/sleep 100)
+  (Thread/sleep 10)
   (odd? elem))
 
 (defn test-filter-fn [filter-fn]
   (time (->> (range)
              (filter-fn test-predicate)
-             (take 25)
+             (take 250)
              (doall))))
 
 (deftest filter-fn-test
