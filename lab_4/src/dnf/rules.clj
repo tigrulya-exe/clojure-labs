@@ -4,7 +4,7 @@
             [dnf.rule-machine :refer :all]))
 
 (def dnf-transformations
-  (list remove-implication-transform
-        bring-negation-transform
+  (list remove-implication-transforms
+        bring-negation-transforms
 
         ))

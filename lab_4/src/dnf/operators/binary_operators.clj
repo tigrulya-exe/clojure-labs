@@ -1,4 +1,4 @@
-(ns dnf.binary-operators
+(ns dnf.operators.binary-operators
   (:require [dnf.shared :refer [is?]]))
 
 ; Conjunction API

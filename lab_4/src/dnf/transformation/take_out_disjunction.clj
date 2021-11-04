@@ -1,34 +1,29 @@
 (ns dnf.transformation.take-out-disjunction
-  (:require [dnf.unary-operators :refer :all]
-            [dnf.binary-operators :refer :all]
+  (:require [dnf.operators.unary-operators :refer :all]
+            [dnf.operators.binary-operators :refer :all]
             [dnf.shared :refer :all]
-            [dnf.rule-machine :refer :all]))
+            [dnf.rule-machine :refer :all]
+            [dnf.transformation.shared :refer :all]))
 
-(defn first-arg-disjunction? [expr]
+(defn conjunction-of-disjunction? [expr]
   (and (conjunction? expr)
        (disjunction? (first (args expr)))))
 
-(defn take-out-disjunction [transform-fn expr]
-  (let [[disj & conj-rest] (args expr)]
+(defn take-out-disjunction [transform-fn conj]
+  (let [[disj & conj-rest-list] (args conj)
+        ;TODO мб стоит делать трансформ для элементов конж один раз только
+        conj-rest (->> (apply conjunction conj-rest-list)
+                       (transform-fn))]
     (apply-to-args disjunction
-                   #(->> (apply conj conj-rest)
-                         (transform-fn)
-                         (apply conjunction %))
+                   #(->> (apply conjunction % conj-rest)
+                         (transform-fn))
                    disj)))
 
 ; 3 этап - вынесесние дизъюнкции наружу
-(def take-out-disjunction-transform
-  (let [transform-fn (partial converse-to-dnf
-                              (list take-out-disjunction-transform))]
-    (list [first-arg-disjunction?
+(def take-out-disjunction-transforms
+  (let [transform-fn (partial transform-dnf
+                              take-out-disjunction-transforms)]
+    (cons [conjunction-of-disjunction?
            (partial take-out-disjunction transform-fn)]
-          ; TODO mb make as default
-          [disjunction?
-           (partial apply-to-args disjunction transform-fn)]
-          [conjunction?
-           (partial apply-to-args conjunction transform-fn)]
-          [negation?
-           (partial apply-to-args negation transform-fn)]
-          [constant? identity]
-          [variable? identity])))
+          (default-transforms transform-fn))))
 

@@ -1,35 +1,37 @@
 (ns dnf.transformation.bring-negation-in
-  (:require [dnf.unary-operators :refer :all]
-            [dnf.binary-operators :refer :all]
+  (:require [dnf.operators.unary-operators :refer :all]
+            [dnf.operators.binary-operators :refer :all]
             [dnf.shared :refer :all]
-            [dnf.rule-machine :refer :all]))
+            [dnf.rule-machine :refer :all]
+            [dnf.transformation.shared :refer :all]))
 
 (defn under-negation? [predicate expr]
   (and (negation? expr)
        (predicate (first (args expr)))))
 
+(def double-negation?
+  (partial under-negation? negation?))
+
+(def conjunction-under-negation?
+  (partial under-negation? conjunction?))
+
+(def disjunction-under-negation?
+  (partial under-negation? disjunction?))
+
 ; 2 этап - занесение отрицания внутрь и избавление от двойного отрицания
-(def bring-negation-transform
-  (let [transform-fn (partial converse-to-dnf
-                              (list bring-negation-transform))]
-    (list [(partial under-negation? disjunction?)
+(defn bring-negation-transforms
+  (let [transform-fn (partial transform-dnf
+                              (list bring-negation-transforms))]
+    (conj (default-transforms transform-fn)
+          [disjunction-under-negation?
            (partial apply-to-args
                     conjunction
                     (comp transform-fn negation))]
-          [(partial under-negation? conjunction?)
+          [conjunction-under-negation?
            (partial apply-to-args
                     disjunction
                     (comp transform-fn negation))]
-          [(partial under-negation? negation?)
-           (comp transform-fn first args)]
-          ; TODO mb make as default
-          [disjunction?
-           (partial apply-to-args disjunction transform-fn)]
-          [conjunction?
-           (partial apply-to-args conjunction transform-fn)]
-          [negation?
-           (partial apply-to-args negation transform-fn)]
-          [constant? identity]
-          [variable? identity])))
+          [double-negation?
+           (comp transform-fn first args)])))
 
 
