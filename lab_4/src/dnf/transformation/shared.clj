@@ -1,10 +1,14 @@
 (ns dnf.transformation.shared
-  (:require [dnf.operators.unary-operators :refer :all]
-            [dnf.operators.binary-operators :refer :all]
-            [dnf.shared :refer :all]))
+  (:require [dnf.operator.unary-operators :refer :all]
+            [dnf.operator.binary-operators :refer :all]
+            [dnf.operator.shared :refer :all]))
 
+(defn apply-to-args [producer fn expr]
+  (->> (args expr)
+       (map fn)
+       (apply producer)))
 
-(defn pred-suppliers (list [disjunction? disjunction]
+(def pred-suppliers (list [disjunction? disjunction]
                            [conjunction? conjunction]
                            [negation? negation]))
 

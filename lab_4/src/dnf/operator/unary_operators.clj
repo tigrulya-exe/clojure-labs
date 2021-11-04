@@ -1,5 +1,5 @@
-(ns dnf.operators.unary-operators
-  (:require [dnf.shared :refer [is?]]))
+(ns dnf.operator.unary-operators
+  (:require [dnf.operator.shared :refer [is?]]))
 
 ; Constant API
 

@@ -1,8 +1,8 @@
 (ns dnf.transformation.bring-negation-in
-  (:require [dnf.operators.unary-operators :refer :all]
-            [dnf.operators.binary-operators :refer :all]
-            [dnf.shared :refer :all]
-            [dnf.rule-machine :refer :all]
+  (:require [dnf.operator.unary-operators :refer :all]
+            [dnf.operator.binary-operators :refer :all]
+            [dnf.operator.shared :refer :all]
+            [dnf.transform-machine :refer :all]
             [dnf.transformation.shared :refer :all]))
 
 (defn under-negation? [predicate expr]
@@ -18,19 +18,22 @@
 (def disjunction-under-negation?
   (partial under-negation? disjunction?))
 
+(defn apply-under-negation [transform-fn producer expr]
+  (let [arg (first (args expr))]
+    (apply-to-args producer
+                   (comp transform-fn negation)
+                   arg)))
+
 ; 2 этап - занесение отрицания внутрь и избавление от двойного отрицания
-(defn bring-negation-transforms
-  (let [transform-fn (partial transform-dnf
-                              (list bring-negation-transforms))]
+(def bring-negation-transforms
+  (let [transform-fn #(apply-transform % bring-negation-transforms)
+        expand-negation-fn (partial apply-under-negation
+                                    transform-fn)]
     (conj (default-transforms transform-fn)
           [disjunction-under-negation?
-           (partial apply-to-args
-                    conjunction
-                    (comp transform-fn negation))]
+           (partial expand-negation-fn conjunction)]
           [conjunction-under-negation?
-           (partial apply-to-args
-                    disjunction
-                    (comp transform-fn negation))]
+           (partial expand-negation-fn disjunction)]
           [double-negation?
            (comp transform-fn first args)])))
 

@@ -1,22 +1,30 @@
 (ns dnf.transformation.remove-brackets
-  (:require [dnf.operators.unary-operators :refer :all]
-            [dnf.operators.binary-operators :refer :all]
-            [dnf.shared :refer :all]
-            [dnf.rule-machine :refer :all]
+  (:require [dnf.operator.unary-operators :refer :all]
+            [dnf.operator.binary-operators :refer :all]
+            [dnf.operator.shared :refer :all]
+            [dnf.transform-machine :refer :all]
             [dnf.transformation.shared :refer :all]))
 
-(defn flatten [predicate supplier transform-fn expr]
-  (apply supplier (->> (args expr)
-                       (map transform-fn)
-                       (mapcat #(if (predicate %)
-                                  (args %)
-                                  %)))))
+(defn flatten [transform-fn predicate expr]
+  (loop [expr-args (->> (args expr)
+                        (map transform-fn)
+                        (reverse))
+         result '()]
+    (if (empty? expr-args)
+      result
+      (let [arg (first expr-args)]
+        (recur (rest expr-args)
+               (if (predicate arg)
+                 (apply conj result (args arg))
+                 (conj result arg)))))))
 
 (def remove-brackets-transforms
-  (let [transform-fn (partial transform-dnf
-                              remove-brackets-transforms)]
+  (let [transform-fn #(apply-transform % remove-brackets-transforms)
+        flatten-fn (partial flatten transform-fn)]
     (conj (default-transforms transform-fn)
           [disjunction?
-           (partial flatten disjunction? disjunction transform-fn)]
+           (comp (partial apply disjunction)
+                 (partial flatten-fn disjunction?))]
           [conjunction?
-           (partial flatten conjunction? conjunction transform-fn)])))
+           (comp (partial apply conjunction)
+                 (partial flatten-fn conjunction?))])))

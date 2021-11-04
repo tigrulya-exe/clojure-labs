@@ -1,8 +1,8 @@
 (ns dnf.transformation.take-out-disjunction
-  (:require [dnf.operators.unary-operators :refer :all]
-            [dnf.operators.binary-operators :refer :all]
-            [dnf.shared :refer :all]
-            [dnf.rule-machine :refer :all]
+  (:require [dnf.operator.unary-operators :refer :all]
+            [dnf.operator.binary-operators :refer :all]
+            [dnf.operator.shared :refer :all]
+            [dnf.transform-machine :refer :all]
             [dnf.transformation.shared :refer :all]))
 
 (defn conjunction-of-disjunction? [expr]
@@ -21,8 +21,7 @@
 
 ; 3 этап - вынесесние дизъюнкции наружу
 (def take-out-disjunction-transforms
-  (let [transform-fn (partial transform-dnf
-                              take-out-disjunction-transforms)]
+  (let [transform-fn #(apply-transform % take-out-disjunction-transforms)]
     (cons [conjunction-of-disjunction?
            (partial take-out-disjunction transform-fn)]
           (default-transforms transform-fn))))

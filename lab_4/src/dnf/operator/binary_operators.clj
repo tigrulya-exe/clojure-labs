@@ -1,5 +1,5 @@
-(ns dnf.operators.binary-operators
-  (:require [dnf.shared :refer [is?]]))
+(ns dnf.operator.binary-operators
+  (:require [dnf.operator.shared :refer [is?]]))
 
 ; Conjunction API
 
@@ -19,7 +19,7 @@
     (apply list ::disj expr rest)))
 
 (defn disjunction? [expr]
-  (is? expr ::conj))
+  (is? expr ::disj))
 
 ; Implication API
 
