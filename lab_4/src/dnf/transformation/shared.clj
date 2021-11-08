@@ -3,20 +3,23 @@
             [dnf.operator.binary-operators :refer :all]
             [dnf.operator.shared :refer :all]))
 
+(def true-expr (constant true))
+(def false-expr (constant false))
+
 (defn apply-to-args [producer fn expr]
   (->> (args expr)
        (map fn)
        (apply producer)))
 
-(def pred-suppliers (list [disjunction? disjunction]
-                           [conjunction? conjunction]
-                           [negation? negation]))
+(def predicate-supplier-pairs (list [disjunction? disjunction]
+                                    [conjunction? conjunction]
+                                    [negation? negation]))
 
 (defn default-transforms [transform-fn]
-  (concat (map (fn [[pred supplier]]
-                 [pred (partial apply-to-args
-                                supplier
-                                transform-fn)])
-               pred-suppliers)
-          (list [constant? identity]
-                [variable? identity])))
+  (conj (map (fn [[pred supplier]]
+               [pred (partial apply-to-args
+                              supplier
+                              transform-fn)])
+             predicate-supplier-pairs)
+        [constant? identity]
+        [variable? identity]))

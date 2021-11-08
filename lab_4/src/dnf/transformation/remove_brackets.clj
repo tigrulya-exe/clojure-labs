@@ -2,10 +2,10 @@
   (:require [dnf.operator.unary-operators :refer :all]
             [dnf.operator.binary-operators :refer :all]
             [dnf.operator.shared :refer :all]
-            [dnf.transform-machine :refer :all]
+            [dnf.transform-engine :refer :all]
             [dnf.transformation.shared :refer :all]))
 
-(defn flatten [transform-fn predicate expr]
+(defn- flatten-expr [transform-fn predicate expr]
   (loop [expr-args (->> (args expr)
                         (map transform-fn)
                         (reverse))
@@ -20,7 +20,7 @@
 
 (def remove-brackets-transforms
   (let [transform-fn #(apply-transform % remove-brackets-transforms)
-        flatten-fn (partial flatten transform-fn)]
+        flatten-fn (partial flatten-expr transform-fn)]
     (conj (default-transforms transform-fn)
           [disjunction?
            (comp (partial apply disjunction)

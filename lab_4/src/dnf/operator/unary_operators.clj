@@ -24,13 +24,6 @@
 (defn variable-name [expr]
   (second expr))
 
-(defn same-variables? [lhr rhr]
-  (and
-    (variable? lhr)
-    (variable? rhr)
-    (= (variable-name lhr)
-       (variable-name rhr))))
-
 ; Negation API
 
 (defn negation [expr]

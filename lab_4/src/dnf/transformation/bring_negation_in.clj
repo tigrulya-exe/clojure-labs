@@ -2,10 +2,10 @@
   (:require [dnf.operator.unary-operators :refer :all]
             [dnf.operator.binary-operators :refer :all]
             [dnf.operator.shared :refer :all]
-            [dnf.transform-machine :refer :all]
+            [dnf.transform-engine :refer :all]
             [dnf.transformation.shared :refer :all]))
 
-(defn under-negation? [predicate expr]
+(defn- under-negation? [predicate expr]
   (and (negation? expr)
        (predicate (first (args expr)))))
 
@@ -18,7 +18,7 @@
 (def disjunction-under-negation?
   (partial under-negation? disjunction?))
 
-(defn apply-under-negation [transform-fn producer expr]
+(defn- apply-under-negation [transform-fn producer expr]
   (let [arg (first (args expr))]
     (apply-to-args producer
                    (comp transform-fn negation)

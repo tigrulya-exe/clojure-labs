@@ -1,17 +1,17 @@
-(ns dnf.operator.print
+(ns dnf.operator.str
   (:require [clojure.string :refer :all]
             [dnf.operator.unary-operators :refer :all]
             [dnf.operator.binary-operators :refer :all]
             [dnf.operator.shared :refer :all]))
 
-(defn pretty-args-str [str-fn expr separator]
+(defn- expr-args-str [str-fn expr separator]
   (str "(" (->> (rest expr)
                 (map str-fn)
                 (join (str " " separator " ")))
        ")"))
 
 (defn expr-str [expr]
-  (let [args-str (partial pretty-args-str expr-str)]
+  (let [args-str (partial expr-args-str expr-str)]
     (cond
       (constant? expr) (str (second expr))
       (variable? expr) (str (second expr))

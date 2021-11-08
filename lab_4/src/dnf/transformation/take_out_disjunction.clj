@@ -2,7 +2,7 @@
   (:require [dnf.operator.unary-operators :refer :all]
             [dnf.operator.binary-operators :refer :all]
             [dnf.operator.shared :refer :all]
-            [dnf.transform-machine :refer :all]
+            [dnf.transform-engine :refer :all]
             [dnf.transformation.shared :refer :all]))
 
 (defn conjunction-of-disjunction? [expr]
