@@ -18,8 +18,12 @@
                                      (variable :b)
                                      (variable :c)))
 
+; a -> b
+(def implication-expr-3 (implication (variable :a)
+                                     (variable :b)))
+
 ; 1 -> 0 -> c
-(def implication-expr-3 (implication (constant true)
+(def implication-expr-4 (implication (constant true)
                                      (constant false)))
 
 ; ~(a & b)
@@ -43,10 +47,10 @@
 
 (deftest a-test
   (testing "FIXME"
-    (let [result (transform-expr dnf-transformations negation-expr-2)]
+    (let [result (transform-expr dnf-transformations implication-expr-3)]
       (println (expr-str result)))))
 
-(deftest a-test
+(deftest b-test
   (testing "FIXME"
     (let [result (eval-expr {:a true :b false :c true} several-ops-expr)]
       (println result))))

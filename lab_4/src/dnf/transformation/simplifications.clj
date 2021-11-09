@@ -3,38 +3,54 @@
             [dnf.operator.binary-operators :refer :all]
             [dnf.operator.shared :refer :all]
             [dnf.transform-engine :refer :all]
+            [clojure.set :refer [intersection]]
             [dnf.transformation.shared :refer :all]))
 
-; refactor after tests
-(defn simplify-disjunction-args [expr transform-fn]
-  (loop [result '()
-         [arg & rest-args] (args expr)]
-    (if (nil? arg)
-      result
-      (let [transformed-arg (transform-fn arg)]
-        (cond
-          (= true-expr transformed-arg)
-            (list true-expr)
-          (= false-expr transformed-arg)
-            (recur result rest-args)
-          :else
-            (recur (conj result transformed-arg)
-                 rest-args))))))
+(defn- variable-under-negation? [expr]
+  (and (negation? expr)
+       (variable? (first (args expr)))))
 
-(defn simplify-conjunction-args [expr transform-fn]
-  (loop [result '()
-         [arg & rest-args] (args expr)]
-    (if (nil? arg)
-      result
-      (let [transformed-arg (transform-fn arg)]
-        (cond
-          (= false-expr transformed-arg)
-            (list false-expr)
-          (= true-expr transformed-arg)
-            (recur result rest-args)
-          :else
-            (recur (conj result transformed-arg)
-                 rest-args))))))
+
+(defn- disj-arg-partition [arg]
+  (cond
+    (= true-expr arg) ::true
+    (= false-expr arg) ::false
+    (variable? arg) ::var
+    (variable-under-negation? arg) ::var-neg
+    :else ::rest))
+
+(defn- intersect? [vars vars-under-negation]
+  (not-empty (intersection (set vars)
+                           (->> (map (comp first args) vars-under-negation)
+                                (set)))))
+
+(defn- simplify-disjunction-args [expr transform-fn]
+  (let [{true-exprs     ::true
+         vars           ::var
+         vars-under-neg ::var-neg
+         rest-args      ::rest} (->> (args expr)
+                                     (map transform-fn)
+                                     (group-by disj-arg-partition))
+        distinct-vars (distinct vars)]
+    (cond
+      (not (nil? true-exprs)) (list true-expr)
+      (and (not (nil? vars-under-neg))
+           (intersect? vars vars-under-neg)) (list true-expr)
+      :else (concat vars-under-neg rest-args distinct-vars))))
+
+(defn- simplify-conjunction-args [expr transform-fn]
+  (let [{false-exprs    ::false
+         vars           ::var
+         vars-under-neg ::var-neg
+         rest-args      ::rest} (->> (args expr)
+                                     (map transform-fn)
+                                     (group-by disj-arg-partition))
+        distinct-vars (distinct vars)]
+    (cond
+      (not (nil? false-exprs)) (list false-expr)
+      (and (not (nil? vars-under-neg))
+           (intersect? vars vars-under-neg)) (list false-expr)
+      :else (concat vars-under-neg rest-args distinct-vars))))
 
 (defn simplify-disjunction [transform-fn expr]
   (let [simplified-args (simplify-disjunction-args expr transform-fn)]

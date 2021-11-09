@@ -5,24 +5,24 @@
             [dnf.transform-engine :refer :all]
             [dnf.transformation.shared :refer :all]))
 
-(defn conjunction-of-disjunction? [expr]
-  (and (conjunction? expr)
-       (disjunction? (first (args expr)))))
-
-(defn take-out-disjunction [transform-fn conj]
-  (let [[disj & conj-rest-list] (args conj)
-        ;TODO мб стоит делать трансформ для элементов конж один раз только
-        conj-rest (->> (apply conjunction conj-rest-list)
-                       (transform-fn))]
-    (apply-to-args disjunction
-                   #(->> (apply conjunction % conj-rest)
-                         (transform-fn))
-                   disj)))
+(defn take-out-disjunction [transform-fn expr]
+  (let [{disj-args  true
+         other-args false} (->> (args expr)
+                                (map transform-fn)
+                                (group-by disjunction?))]
+    (if (nil? disj-args)
+      (apply conjunction other-args)
+      (apply-to-args disjunction
+                     #(->> (apply conjunction
+                                  %
+                                  (concat other-args (rest disj-args)))
+                           (transform-fn))
+                     (first disj-args)))))
 
 ; 3 этап - вынесесние дизъюнкции наружу
 (def take-out-disjunction-transforms
   (let [transform-fn #(apply-transform % take-out-disjunction-transforms)]
-    (cons [conjunction-of-disjunction?
+    (cons [conjunction?
            (partial take-out-disjunction transform-fn)]
           (default-transforms transform-fn))))
 

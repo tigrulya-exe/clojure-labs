@@ -35,6 +35,6 @@
           [conjunction-under-negation?
            (partial expand-negation-fn disjunction)]
           [double-negation?
-           (comp transform-fn first args)])))
+           (comp transform-fn first args first args)])))
 
 
