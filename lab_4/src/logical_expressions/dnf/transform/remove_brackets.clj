@@ -18,6 +18,8 @@
                  (apply conj result (args arg))
                  (conj result arg)))))))
 
+; 4th step of transforming expression to DNF:
+; removing unnecessary brackets (nesting)
 (def remove-brackets-transforms
   (let [transform-fn #(apply-transform % remove-brackets-transforms)
         flatten-fn (partial flatten-expr transform-fn)]

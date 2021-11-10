@@ -5,7 +5,7 @@
             [logical-expressions.core.transform.engine :refer :all]
             [logical-expressions.core.transform.shared :refer :all]))
 
-(defn take-out-disjunction [transform-fn expr]
+(defn- take-out-disjunction [transform-fn expr]
   (let [{disj-args  true
          other-args false} (->> (args expr)
                                 (map transform-fn)
@@ -19,7 +19,8 @@
                            (transform-fn))
                      (first disj-args)))))
 
-; 3 этап - вынесесние дизъюнкции наружу
+; 3rd step of transforming expression to DNF:
+; pushing the disjunction outward
 (def take-out-disjunction-transforms
   (let [transform-fn #(apply-transform % take-out-disjunction-transforms)]
     (cons [conjunction?

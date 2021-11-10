@@ -53,19 +53,19 @@
            (intersect? vars vars-under-neg)) (list false-expr)
       :else (concat vars-under-neg rest-args distinct-vars))))
 
-(defn simplify-disjunction [transform-fn expr]
+(defn- simplify-disjunction [transform-fn expr]
   (let [simplified-args (simplify-disjunction-args expr transform-fn)]
     (if (empty? simplified-args)
       false-expr
       (apply disjunction simplified-args))))
 
-(defn simplify-conjunction [transform-fn expr]
+(defn- simplify-conjunction [transform-fn expr]
   (let [simplified-args (simplify-conjunction-args expr transform-fn)]
     (if (empty? simplified-args)
       true-expr
       (apply conjunction simplified-args))))
 
-(defn simplify-negation [transform-fn expr]
+(defn- simplify-negation [transform-fn expr]
   (let [arg (->> (args expr)
                  (first)
                  (transform-fn))]
@@ -74,7 +74,8 @@
       (= true-expr arg) false-expr
       :else (negation arg))))
 
-; Упрощение выражений
+; 5th step of transforming expression to DNF:
+; simplifying expression by revealing identically false/true expressions, etc
 (def simplify-expr-transforms
   (let [transform-fn #(apply-transform % simplify-expr-transforms)]
     (conj (default-transforms transform-fn)

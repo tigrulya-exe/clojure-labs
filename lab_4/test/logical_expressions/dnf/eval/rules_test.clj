@@ -1,5 +1,6 @@
 (ns logical-expressions.dnf.eval.rules-test
   (:require [clojure.test :refer :all]
+            [logical-expressions.test-shared :refer :all]
             [logical-expressions.core.operation.unary :refer :all]
             [logical-expressions.core.operation.binary :refer :all]
             [logical-expressions.core.operation.util :refer :all]
@@ -17,16 +18,13 @@
                         {:a true
                          :b false
                          :c false}
-                        (list [(disjunction (conjunction (variable :a)
-                                                         (negation (variable :b)))
-                                            (variable :a)
-                                            (variable :c))
+                        (list [(disjunction (conjunction var-a (negation var-b))
+                                            var-a
+                                            var-c)
                                true]
-                              [(disjunction (variable :a)
-                                            (variable :c))
+                              [(disjunction var-a var-c)
                                true]
-                              [(conjunction (variable :a)
-                                            (variable :c))
+                              [(conjunction var-a var-c)
                                false])))
 
 (defn check-input [transforms vars [input expected]]
@@ -35,7 +33,7 @@
     (println (str "\"" (expr-str input)
                   "\" evaluated to \""
                   result "\". Check equality with \""
-                  expected "\""))
+                  expected "\"\n"))
     (is (= expected result))))
 
 (defn run-test-case [test-case]
@@ -45,8 +43,6 @@
          (run! (partial check-input
                         (test-case :transforms)
                         (test-case :vars))))))
-
-;TODO добавить тесты на взятие переменной из мапы
 
 (deftest test-eval-dnf-rules
   (run-test-case simple-test-case))

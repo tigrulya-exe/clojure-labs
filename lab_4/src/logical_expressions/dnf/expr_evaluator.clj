@@ -5,7 +5,11 @@
             [logical-expressions.dnf.transform.transformations :refer :all]
             [logical-expressions.dnf.eval.rules :refer :all]))
 
-(defn eval-expr [variables expr]
+(defn eval-expr
+  "Evaluates provided expression by transforming it to DNF
+   and injecting variables values, provided in variables map
+   (key - variable name, value - variable value)."
+  [variables expr]
   (println (str "Try to eval expr: " (expr-str expr)) "vars:" variables)
   (let [dnf (transform-expr dnf-transformations expr)]
     (println (str "DNF: " (expr-str dnf)))

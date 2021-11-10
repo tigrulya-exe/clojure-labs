@@ -1,5 +1,6 @@
 (ns logical-expressions.core.eval.operations-test
   (:require [clojure.test :refer :all]
+            [logical-expressions.test-shared :refer :all]
             [logical-expressions.core.transform.shared :refer :all]
             [logical-expressions.core.operation.unary :refer :all]
             [logical-expressions.core.operation.util :refer :all]
@@ -43,3 +44,15 @@
            true]
           [(negation true-expr)
            false])))
+
+(deftest test-eval-variable
+  (testing
+    "Check eval variable success case"
+    (is (= true (eval-variable {:a true} var-a)))))
+
+(deftest test-eval-variable
+  (testing
+    "Check eval variable success case"
+    (is (thrown? IllegalArgumentException
+                 (eval-variable {:b true} var-a)))))
+

@@ -5,6 +5,12 @@
             [logical-expressions.core.transform.engine :refer :all]
             [logical-expressions.core.transform.shared :refer :all]))
 
+(defn- apply-under-negation [transform-fn producer expr]
+  (let [arg (first (args expr))]
+    (apply-to-args producer
+                   (comp transform-fn negation)
+                   arg)))
+
 (defn- under-negation? [predicate expr]
   (and (negation? expr)
        (predicate (first (args expr)))))
@@ -18,13 +24,8 @@
 (def disjunction-under-negation?
   (partial under-negation? disjunction?))
 
-(defn- apply-under-negation [transform-fn producer expr]
-  (let [arg (first (args expr))]
-    (apply-to-args producer
-                   (comp transform-fn negation)
-                   arg)))
-
-; 2 этап - занесение отрицания внутрь и избавление от двойного отрицания
+; 2nd step of transforming expression to DNF:
+; bringing negations inside and getting rid of double negations
 (def bring-negation-transforms
   (let [transform-fn #(apply-transform % bring-negation-transforms)
         expand-negation-fn (partial apply-under-negation

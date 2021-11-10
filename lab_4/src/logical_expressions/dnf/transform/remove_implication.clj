@@ -11,8 +11,8 @@
       (negation (transform-fn first-arg))
       (transform-fn (apply implication rest)))))
 
-; 1 этап - избавление от импликаций
-; слева предикат для срабатываения, справа трансформация (fn принимает expr, возвращает expr)
+; 1st step of transforming expression to DNF:
+; removing implications
 (def remove-implication-transforms
   (let [transform-fn #(apply-transform % remove-implication-transforms)]
     (cons [implication?

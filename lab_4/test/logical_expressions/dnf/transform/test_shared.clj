@@ -8,7 +8,7 @@
     (println (str "\"" (expr-str input)
                   "\" transformed to \""
                   (expr-str result) "\". Check equality with \""
-                  (expr-str expected) "\""))
+                  (expr-str expected) "\"\n"))
     (is (= expected result))))
 
 (defn run-test-case [test-case]

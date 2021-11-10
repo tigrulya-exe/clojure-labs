@@ -3,12 +3,16 @@
             [logical-expressions.core.operation.binary :refer :all]
             [logical-expressions.core.operation.shared :refer :all]))
 
-(defn apply-to-args [producer fn expr]
+(defn apply-to-args
+  "Applies fn to arguments of expr and passes result to producer function"
+  [producer fn expr]
   (->> (args expr)
        (map fn)
        (apply producer)))
 
-(defn default-transforms [transform-fn]
+(defn default-transforms
+  "Returns default transformations for logical operations"
+  [transform-fn]
   (conj (map (fn [[pred supplier]]
                [pred (partial apply-to-args
                               supplier

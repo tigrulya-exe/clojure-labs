@@ -11,7 +11,8 @@
 (defn eval-disjunction
   "Recursively evaluates disjunction expression with provided eval function"
   [eval-fn expr]
-  (some identity (eval-args expr eval-fn)))
+  (not (nil?
+         (some identity (eval-args expr eval-fn)))))
 
 (defn eval-conjunction
   "Recursively evaluates conjunction expression with provided eval function"
@@ -26,6 +27,11 @@
        (not)))
 
 (defn eval-variable
-  "Recursively evaluates negation expression with provided eval function"
+  "Gets variable expression value from variable map (key - var name, value - var value)."
   [vars expr]
-  (vars (variable-name expr)))
+  (let [var-name (variable-name expr)
+        var-value (vars var-name)]
+    (if (nil? var-value)
+      (throw (IllegalArgumentException.
+               (str "Value for variable " var-name " not found in " vars)))
+      var-value)))

@@ -8,6 +8,7 @@
   (fn [vars expr] (recur-eval-fn (partial eval-fn vars)
                                  expr)))
 
+; DNF expression evaluation rules
 (def eval-dnf-rules
   (let [recur-eval-fn #(eval-expr eval-dnf-rules %1 %2)
         ; why it doesn't work (ﾉಥ益ಥ)ﾉ
@@ -21,5 +22,6 @@
           [negation?
            (build-eval-fn eval-negation)])))
 
+; Evaluates given DNF expression
 (def eval-dnf-expr
   (partial eval-expr eval-dnf-rules))
